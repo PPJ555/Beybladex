@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>10/2 陀螺抽選順序</title>
+<style>
+:root{--bg:#f6f3ee;--card:#fff;--ink:#1d2433;--sub:#6b7280;--acc:#e8590c;--pri:#fff3e6;--line:#e5e0d8;--ok:#2f9e5b;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#141a26;--card:#1e2636;--ink:#eef1f6;--sub:#9aa4b5;--acc:#ff8a3d;--pri:#2b2a30;--line:#2c3548;--ok:#4cc38a}}
+:root[data-theme="dark"]{--bg:#141a26;--card:#1e2636;--ink:#eef1f6;--sub:#9aa4b5;--acc:#ff8a3d;--pri:#2b2a30;--line:#2c3548;--ok:#4cc38a}
+*{box-sizing:border-box}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 "PingFang TC","Noto Sans TC","Microsoft JhengHei",sans-serif;max-width:560px;margin-inline:auto;padding:16px 14px 90px}
+h1{font-size:26px;margin:8px 0 2px}
+.sub{color:var(--sub);font-size:14px;margin:0 0 10px}
+.bar{height:10px;background:var(--line);border-radius:6px;overflow:hidden;margin:6px 0 4px}
+.bar i{display:block;height:100%;width:0;background:var(--ok);transition:width .3s}
+button,a.go{font:inherit;border:0;border-radius:10px;min-height:44px;cursor:pointer}
+.big{width:100%;background:var(--acc);color:#fff;font-weight:700;font-size:18px;min-height:52px;border-radius:14px}
+.big:disabled{opacity:.4}
+.run{background:var(--pri);border:1px solid var(--acc);border-radius:16px;padding:14px;margin:10px 0}
+.run p{margin:0 0 10px;font-size:14px;color:var(--sub)}
+.chips{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}
+.chips button{background:var(--card);color:var(--ink);border:1px solid var(--line);padding:0 14px;min-height:40px}
+.chips button.on{background:var(--ink);color:var(--bg)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:10px 12px;margin-bottom:10px}
+.card h3{margin:0 0 6px;font-size:16px}
+.card h3 b{color:var(--acc);margin-right:6px}
+.r{display:flex;align-items:center;gap:10px;padding:4px 0;border-top:1px solid var(--line)}
+.r.done{opacity:.5}
+.r .t{flex:1;font-size:15px}
+.r small{color:var(--sub)}
+a.go{background:var(--acc);color:#fff;padding:0 14px;display:flex;align-items:center;text-decoration:none;font-weight:600}
+.chk{background:none;font-size:22px;width:44px;padding:0;color:var(--sub)}
+.chk.on{color:var(--ok)}
+details{margin-top:14px;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px 12px;font-size:14px}
+summary{cursor:pointer;font-weight:600;min-height:32px}
+.row{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
+.row button{background:var(--card);color:var(--ink);border:1px solid var(--line);padding:0 14px}
+.bn{position:fixed;left:12px;right:12px;bottom:calc(12px + env(safe-area-inset-bottom,0px));max-width:536px;margin:auto;background:var(--ink);color:var(--bg);border-radius:14px;padding:12px 14px;display:flex;align-items:center;justify-content:space-between;gap:10px;z-index:9}
+.bn[hidden]{display:none}
+.bn button{background:var(--acc);color:#fff;padding:0 14px}
+:focus-visible{outline:3px solid var(--acc);outline-offset:2px}
+</style>
+</head>
+<body>
+<h1>10/2 陀螺抽選順序</h1>
+<p class="sub">彰化萬家福、員林、斗六。抽選與購買 10/2 10:00 – 10/3 21:00。每人限一個帳號，每項只抽一次。</p>
+<div class="bar"><i id="fill"></i></div>
+<div class="sub" id="count"></div>
+
+<div class="run">
+  <p>在 LINE 按完抽選後返回 Safari，頁面會倒數 5 秒，自動開下一筆。抽選那一下由你自己按。</p>
+  <button class="big" id="runbtn">開始快速連抽</button>
+</div>
+
+<div class="chips" id="chips"></div>
+<div id="list"></div>
+<p class="sub" id="none"></p>
+
+<details>
+  <summary>各店注意事項</summary>
+  <p><b>來玩聚 彰化萬家福店</b>：彰化市金馬路二段 321 號商店街 2 樓，營業 10:00–22:00。先加官方 LINE 才能抽（@766sgllj）。逾期或顯示已使用視同棄權。</p>
+  <p><b>來玩聚 員林店</b>：中籤者請於指定時間前報到。</p>
+  <p><b>來玩聚 斗六店</b>：官方 LINE @rsp8657s。中獎畫面要直接出示給店員，截圖、報序號、共享畫面、視訊都不受理。</p>
+  <p><b>三間共通</b>：中籤後不要自己按「使用優惠券」，由店員核銷。每人限陀螺 1 個、抽抽包 3 包。</p>
+</details>
+
+<div class="row">
+  <button id="hide">隱藏已抽的</button>
+  <button id="share">分享給朋友</button>
+  <button id="reset">全部取消打勾</button>
+</div>
+
+<div class="bn" id="bn" hidden></div>
+<script>
+var DATA=[["UX-15", "UX-15 鮫鯊狂鱗改造組", [["彰化", 795, "https://lin.ee/PcQ2EpK"], ["員林", 795, "https://lin.ee/p36DEhq"], ["斗六", 0, "https://lin.ee/qOjXvRk"]]], ["BX-09", "BX-09 戰鬥陀螺X通行證", [["彰化", 995, "https://lin.ee/nbWkqsi"], ["員林", 995, "https://lin.ee/8WM2vuD"], ["斗六", 0, "https://lin.ee/YUINcSP"]]], ["CX-11", "CX-11 帝王威能", [["彰化", 995, "https://lin.ee/sNj4GGa"], ["員林", 995, "https://lin.ee/yGxNa7G"], ["斗六", 0, "https://lin.ee/R4JKEdw"]]], ["CX-05", "CX-05 隨機強化組 Vol.6", [["彰化", 350, "https://lin.ee/6VDMxD8"], ["員林", 350, "https://lin.ee/q2rvai9"], ["斗六", 0, "https://lin.ee/5V2JHpP"]]], ["CX-17", "CX-17 隨機強化組 Vol.10", [["彰化", 350, "https://lin.ee/9GZPPEZ"], ["員林", 350, "https://lin.ee/pV4eSgK"]]], ["UX-16", "UX-16 時鐘幻象 隨機強化組", [["彰化", 295, "https://lin.ee/5LfOA5u"], ["員林", 295, "https://lin.ee/YfpOngo"], ["斗六", 0, "https://lin.ee/ZIXn97K"]]], ["CX-08", "CX-08 隨機強化組 Vol.7", [["彰化", 350, "https://lin.ee/RTb6KVE"], ["員林", 350, "https://lin.ee/tmBxyba"], ["斗六", 0, "https://lin.ee/qCNbWQk"]]], ["CX-00D", "CX-00 迪卡狂怒 FT3-60T", [["彰化", 595, "https://lin.ee/WOXYLqq"], ["員林", 595, "https://lin.ee/8CBRw3n"], ["斗六", 0, "https://lin.ee/yfep0g4"]]], ["UX-17", "UX-17 隕星龍騎士3-70J", [["彰化", 550, "https://lin.ee/zN15R62"], ["員林", 550, "https://lin.ee/uuvmzfk"], ["斗六", 0, "https://lin.ee/XZLF9H7"]]], ["UX-19", "UX-19 子彈獅鷲H", [["彰化", 550, "https://lin.ee/zj3Vfml"], ["員林", 550, "https://lin.ee/9L8aCrO"], ["斗六", 0, "https://lin.ee/QI9JCCH"]]], ["UX-20", "UX-20 榮耀武神LF", [["彰化", 595, "https://lin.ee/V76hBNC"], ["員林", 595, "https://lin.ee/siZZh08"], ["斗六", 0, "https://lin.ee/RuQQKZB"]]], ["UX-01", "UX-01 蒼龍爆刃", [["彰化", 395, "https://lin.ee/wH6fv7PW"], ["員林", 395, "https://lin.ee/8vNJUEA"], ["斗六", 0, "https://lin.ee/oMlbC5W"]]], ["UX-03", "UX-03 魔導神杖", [["彰化", 295, "https://lin.ee/tvqftND"], ["員林", 295, "https://lin.ee/Tz91Mg3"], ["斗六", 0, "https://lin.ee/rXPfF2k"]]], ["CX-13", "CX-13 龍王閃擊", [["彰化", 495, "https://lin.ee/oomyAUk"], ["員林", 495, "https://lin.ee/9nwAeDX"], ["斗六", 0, "https://lin.ee/VFjakMo"]]], ["CX-01", "CX-01 蒼龍勇氣", [["彰化", 495, "https://lin.ee/QfMiwbp"], ["員林", 495, "https://lin.ee/q1WpsLr"], ["斗六", 0, "https://lin.ee/wssxT13"]]], ["CX-02", "CX-02 魔導至尊", [["彰化", 495, "https://lin.ee/PUJV3xi"], ["員林", 495, "https://lin.ee/zlZXe9V"], ["斗六", 0, "https://lin.ee/8r3L2tZ"]]], ["CX-03", "CX-03 英仙幽冥", [["彰化", 350, "https://lin.ee/owHauyl"], ["員林", 350, "https://lin.ee/sT69Eey"], ["斗六", 0, "https://lin.ee/5QoJcIf"]]], ["CX-14", "CX-14 騎士堡壘", [["彰化", 495, "https://lin.ee/zFYrsix"], ["員林", 495, "https://lin.ee/Wpua0Hs"], ["斗六", 0, "https://lin.ee/uGiKJV6"]]], ["UX-14", "UX-14 天蠍長矛0-70Z", [["彰化", 495, "https://lin.ee/8WxCJhp"], ["員林", 495, "https://lin.ee/vVMSVYR"], ["斗六", 0, "https://lin.ee/vkV9djS"]]], ["CX-00E", "CX-00 新世紀福音戰士改造組", [["彰化", 1395, "https://lin.ee/XhbboSu"], ["員林", 1395, "https://lin.ee/PV9x1J7"], ["斗六", 0, "https://lin.ee/VujxgEi"]]], ["CX-16", "CX-16 極限衝擊對戰組C", [["彰化", 1995, "https://lin.ee/Yh24G2R"], ["員林", 1995, "https://lin.ee/RWC62Nb"], ["斗六", 0, "https://lin.ee/5S9r8rh"]]], ["CX-15", "CX-15 邪神狂怒", [["彰化", 350, "https://lin.ee/5d9ezOU"], ["員林", 350, "https://lin.ee/YXTAYHo"], ["斗六", 0, "https://lin.ee/WhTT0pB"]]], ["UX-13", "UX-13 魔像奇岩", [["彰化", 295, "https://lin.ee/5z1FUIX"], ["員林", 295, "https://lin.ee/NnotYB8"], ["斗六", 0, "https://lin.ee/RmEzLf3"]]], ["BX-00", "BX-00 蒼龍神劍 V2", [["彰化", 350, "https://lin.ee/9EWQA2S"], ["員林", 350, "https://lin.ee/9WAmpoQj"]]], ["BXG-04", "BXG-04 銀牙烈虎S", [["彰化", 350, "https://lin.ee/7OxYfN9"]]]];
+var NONE="CX-19 鱷魚裂甲 隨機強化組、UX-21 惡魔冥界改造組";
+var KEY="lottery-10-v1",st={done:{},hide:false,store:"全部"};
+try{var o=JSON.parse(localStorage.getItem(KEY));if(o)st=o}catch(e){}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(st))}catch(e){}}
+var ALL=[];DATA.forEach(function(d,i){d[2].forEach(function(s){ALL.push({id:d[0]+"|"+s[0],name:d[1],rank:i+1,store:s[0],price:s[1],url:s[2]})})});
+function vis(){return ALL.filter(function(x){return st.store==="全部"||x.store===st.store})}
+function render(){
+  var cs=document.getElementById("chips");cs.innerHTML="";
+  ["全部","彰化","員林","斗六"].forEach(function(n){var b=document.createElement("button");b.textContent=n;if(st.store===n)b.className="on";b.onclick=function(){st.store=n;save();render()};cs.appendChild(b)});
+  var L=document.getElementById("list");L.innerHTML="";
+  var v=vis(),shown=0;
+  DATA.forEach(function(d,i){
+    var rows=v.filter(function(x){return x.rank===i+1&&!(st.hide&&st.done[x.id])});
+    if(!rows.length)return;shown++;
+    var c=document.createElement("div");c.className="card";
+    var h=document.createElement("h3");var b=document.createElement("b");b.textContent=(i+1)+".";h.append(b,d[1]);c.appendChild(h);
+    rows.forEach(function(x){
+      var r=document.createElement("div");r.className="r"+(st.done[x.id]?" done":"");
+      var t=document.createElement("div");t.className="t";t.textContent=x.store;
+      if(x.price){var p=document.createElement("small");p.textContent="  $"+x.price;t.appendChild(p)}
+      var a=document.createElement("a");a.className="go";a.textContent="去抽選";a.href=x.url;a.rel="noopener";
+      var k=document.createElement("button");k.className="chk"+(st.done[x.id]?" on":"");k.textContent=st.done[x.id]?"✔":"○";k.setAttribute("aria-label","標記已報名");
+      k.onclick=function(){st.done[x.id]=!st.done[x.id];save();render()};
+      r.append(t,a,k);c.appendChild(r)});
+    L.appendChild(c)});
+  var dn=v.filter(function(x){return st.done[x.id]}).length;
+  document.getElementById("fill").style.width=(v.length?dn/v.length*100:0)+"%";
+  document.getElementById("count").textContent="已報名 "+dn+" / "+v.length;
+  var left=v.length-dn,rb=document.getElementById("runbtn");rb.textContent="開始快速連抽（"+left+"）";rb.disabled=!left;
+  document.getElementById("none").textContent="這三間都沒有："+NONE;
+  document.getElementById("hide").textContent=st.hide?"顯示已抽的":"隱藏已抽的";
+}
+var RUN="lottery-10-run",tm=null;
+function getRun(){try{return JSON.parse(localStorage.getItem(RUN))}catch(e){return null}}
+function setRun(r){try{r?localStorage.setItem(RUN,JSON.stringify(r)):localStorage.removeItem(RUN)}catch(e){}}
+function stopTimer(){if(tm){clearInterval(tm);tm=null}}
+function bn(msg,btns){
+  var b=document.getElementById("bn");b.hidden=false;b.innerHTML="";
+  var s=document.createElement("span");s.textContent=msg;b.appendChild(s);
+  var w=document.createElement("div");w.style.cssText="display:flex;gap:8px";
+  (btns||[]).forEach(function(z){var x=document.createElement("button");x.textContent=z[0];x.onclick=z[1];w.appendChild(x)});
+  b.appendChild(w);
+}
+function goNext(){
+  var r=getRun();
+  if(!r||!r.q.length){setRun(null);render();bn("全部報名完成 🎉");return}
+  var id=r.q.shift(),x=ALL.filter(function(a){return a.id===id})[0];
+  if(!x){setRun(r);goNext();return}
+  r.cur=id;r.t=Date.now();setRun(r);location.href=x.url;
+}
+function startRun(){
+  var q=vis().filter(function(x){return !st.done[x.id]}).map(function(x){return x.id});
+  if(!q.length)return;setRun({q:q});goNext();
+}
+function onReturn(){
+  var r=getRun();if(!r||!r.cur||tm)return;
+  if(Date.now()-r.t>30*60000){setRun(null);return}
+  st.done[r.cur]=true;r.cur=null;save();render();
+  if(!r.q.length){setRun(null);bn("全部報名完成 🎉");return}
+  setRun(r);var n=5,left=r.q.length;
+  function show(){bn(n+" 秒後開下一筆（還有 "+left+" 筆）",[["現在開",function(){stopTimer();goNext()}],["停止",function(){stopTimer();setRun(null);document.getElementById("bn").hidden=true}]])}
+  show();
+  tm=setInterval(function(){n--;if(n<=0){stopTimer();goNext()}else show()},1000);
+}
+document.getElementById("runbtn").onclick=startRun;
+document.getElementById("hide").onclick=function(){st.hide=!st.hide;save();render()};
+document.getElementById("reset").onclick=function(){if(confirm("全部取消打勾？")){st.done={};save();render()}};
+document.getElementById("share").onclick=function(){
+  var u=location.href;
+  if(navigator.share){navigator.share({title:document.title,url:u}).catch(function(){})}
+  else if(navigator.clipboard){navigator.clipboard.writeText(u).then(function(){bn("連結已複製",[["好",function(){document.getElementById("bn").hidden=true}]])})}
+  else{prompt("複製這個連結",u)}
+};
+document.addEventListener("visibilitychange",function(){if(!document.hidden)onReturn()});
+window.addEventListener("pageshow",onReturn);
+render();onReturn();
+</script>
+</body>
+</html>
